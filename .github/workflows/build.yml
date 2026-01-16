@@ -19,19 +19,23 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Dependencies
-        run: |
-          pip install flet
-          pip install -r requirements.txt
-
+      # Flutter'ı önden kuruyoruz ki Flet şaşırmasın
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.0'
+          flutter-version: '3.22.0'
+          channel: 'stable'
 
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install flet
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # İŞTE SİHİRLİ DOKUNUŞ BURADA: 'python -m flet' kullanıyoruz
       - name: Flet Build APK
         run: |
-          flet build apk --verbose
+          python -m flet build apk --verbose
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
