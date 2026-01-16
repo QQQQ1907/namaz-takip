@@ -1,44 +1,30 @@
 name: Build Android APK
-
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
-      # Flutter'ı önden kuruyoruz ki Flet şaşırmasın
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+          
+      - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
           channel: 'stable'
-
-      - name: Install Dependencies
+          
+      - name: Install dependencies
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install flet
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      # İŞTE SİHİRLİ DOKUNUŞ BURADA: 'python -m flet' kullanıyoruz
-      - name: Flet Build APK
+          
+      - name: Build APK
         run: |
           python -m flet build apk --verbose
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+          
+      - uses: actions/upload-artifact@v4
         with:
           name: namaz-takip-apk
           path: build/apk/app-release.apk
